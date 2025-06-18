@@ -1,790 +1,172 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video CMS Analytics Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .trend-up { color: #10b981; }
-        .trend-down { color: #ef4444; }
-        .kpi-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
+<script>
+    // Initialize charts
+    function initializeCharts() {
+        // Weekly Trend Chart
+        const weeklyCtx = document.getElementById('weeklyTrendChart').getContext('2d');
+        new Chart(weeklyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [{
+                    label: 'Views',
+                    data: [8500, 9200, 10800, 12340],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.1
+                }, {
+                    label: 'Engagement',
+                    data: [890, 1120, 1340, 1580],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Audience Segment Chart
+        const audienceCtx = document.getElementById('audienceSegmentChart').getContext('2d');
+        new Chart(audienceCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Highly Engaged', 'Casual Viewers'],
+                datasets: [{
+                    data: [1240, 7520],
+                    backgroundColor: ['#10b981', '#6b7280'],
+                    hoverBackgroundColor: ['#059669', '#4b5563']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Menu navigation functionality
+    function switchMenu(menuName) {
+        // For demo purposes, just show an alert
+        if (menuName !== 'analytics') {
+            alert(`Navigating to ${menuName.charAt(0).toUpperCase() + menuName.slice(1)} section`);
         }
-        .content-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            margin-bottom: 1.5rem;
+    }
+
+    function toggleAnalytics() {
+        const submenu = document.getElementById('analytics-submenu');
+        submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function switchAnalyticsTab(tabName) {
+        if (tabName === 'summary') {
+            // Already on summary page
+            return;
+        } else if (tabName === 'viewers') {
+            // Navigate to viewers page
+            window.location.href = 'viewers-analytics.html';
+        } else if (tabName === 'videos') {
+            // Navigate to videos page
+            window.location.href = 'videos-analytics.html';
+        } else if (tabName === 'engagement') {
+            // Navigate to engagement page
+            window.location.href = 'engagement-analytics.html';
         }
-        .sidebar {
-            width: 240px;
-            background: white;
-            border-right: 1px solid #e5e7eb;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            overflow-y: auto;
-            padding: 1.5rem 0;
-        }
-        .main-content {
-            margin-left: 240px;
-            min-height: 100vh;
-        }
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.5rem;
-            color: #6b7280;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 0.875rem;
-        }
-        .menu-item:hover {
-            background-color: #f9fafb;
-            color: #111827;
-        }
-        .menu-item.active {
-            background-color: #dbeafe;
-            color: #1d4ed8;
-            font-weight: 500;
-        }
-        .menu-item .icon {
-            width: 1.25rem;
-            height: 1.25rem;
-            margin-right: 0.75rem;
-        }
-        .submenu {
-            padding-left: 2.5rem;
-            background-color: #f9fafb;
-        }
-        .submenu .menu-item {
-            padding: 0.5rem 1.5rem;
-            font-size: 0.8rem;
-        }
-        .tab-button {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tab-active {
-            background-color: #dbeafe;
-            color: #1d4ed8;
-        }
-        .tab-inactive {
-            color: #6b7280;
-        }
-        .tab-inactive:hover {
-            color: #111827;
-        }
-        .download-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
-        .download-btn:hover {
-            transform: translateY(-1px);
-        }
-        .icon {
-            width: 1rem;
-            height: 1rem;
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        .pie-chart-container {
-            position: relative;
-            height: 200px;
-            width: 100%;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Video CMS</h2>
-        </div>
+    }
+
+    // Download functionality
+    function convertToCSV(data, headers) {
+        const csvHeaders = headers.join(',');
+        const csvRows = data.map(row => 
+            headers.map(header => {
+                const value = row[header];
+                if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+                    return `"${value.replace(/"/g, '""')}"`;
+                }
+                return value;
+            }).join(',')
+        );
+        return [csvHeaders, ...csvRows].join('\n');
+    }
+
+    function downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
         
-        <nav class="mt-4">
-            <!-- Channel detail -->
-            <button class="menu-item" onclick="switchMenu('channel-detail')">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-                Channel detail
-            </button>
-
-            <!-- Content -->
-            <button class="menu-item" onclick="switchMenu('content')">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                </svg>
-                Content
-            </button>
-
-            <!-- Configuration -->
-            <button class="menu-item" onclick="switchMenu('configuration')">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                Configuration
-            </button>
-
-            <!-- Branding -->
-            <button class="menu-item" onclick="switchMenu('branding')">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
-                </svg>
-                Branding
-            </button>
-
-            <!-- Survey -->
-            <button class="menu-item" onclick="switchMenu('survey')">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                </svg>
-                Survey
-            </button>
-
-            <!-- Analytics -->
-            <button class="menu-item active" onclick="toggleAnalytics()">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                Analytics
-                <svg class="icon ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </button>
-
-            <!-- Analytics Submenu -->
-            <div id="analytics-submenu" class="submenu">
-                <button class="menu-item tab-active" onclick="switchAnalyticsTab('summary')">Summary</button>
-                <button class="menu-item tab-inactive" onclick="window.open('viewers-analytics.html', '_blank')">Viewer</button>
-                <button class="menu-item tab-inactive" onclick="window.open('videos-analytics.html', '_blank')">Videos</button>
-                <button class="menu-item tab-inactive" onclick="switchAnalyticsTab('engagement')">Engagement</button>
-            </div>
-
-            <!-- Integrations -->
-            <button class="menu-item" onclick="switchMenu('integrations')">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                </svg>
-                Integrations
-            </button>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content p-6">
-        <div class="max-w-7xl mx-auto">
-            <!-- Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-4">Analytics - Summary</h1>
-                <div class="flex items-center space-x-4">
-                    <select id="timeRange" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="7d">Last 7 days</option>
-                        <option value="30d">Last 30 days</option>
-                        <option value="90d">Last 90 days</option>
-                    </select>
-                </div>
-            </div>
-
-        <!-- KPI Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Total Views</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-4a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">12,340</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        15.2%
-                    </span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Unique Viewers</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">8,760</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        12.8%
-                    </span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Accumulated Watch Time</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">45,680 min</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        18.5%
-                    </span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Average Watch Time</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">5.2 min</span>
-                    <span class="text-sm flex items-center trend-down">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
-                        </svg>
-                        2.1%
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Second Row KPIs -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Engagement Rate</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">24.3%</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        8.7%
-                    </span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Completion Rate</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-4a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">68.5%</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        5.2%
-                    </span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Return Viewer Rate</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">42.1%</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        3.4%
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Weekly Trend Chart -->
-            <div class="lg:col-span-2 content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Performance Trend</h3>
-                <div class="chart-container">
-                    <canvas id="weeklyTrendChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Audience Segments -->
-            <div class="content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Engagement Segments</h3>
-                <div class="pie-chart-container">
-                    <canvas id="audienceSegmentChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content Performance Tables -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Top Performing Videos -->
-            <div class="content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Performing Videos</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm font-medium text-gray-500">#1</span>
-                                <span class="font-medium text-gray-900">Introduction to Product Strategy</span>
-                            </div>
-                            <div class="flex items-center space-x-4 mt-1 text-sm text-gray-600">
-                                <span>2,340 views</span>
-                                <span>Score: 1,580</span>
-                            </div>
-                        </div>
-                        <svg class="icon text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm font-medium text-gray-500">#2</span>
-                                <span class="font-medium text-gray-900">Advanced Analytics Deep Dive</span>
-                            </div>
-                            <div class="flex items-center space-x-4 mt-1 text-sm text-gray-600">
-                                <span>1,890 views</span>
-                                <span>Score: 1,420</span>
-                            </div>
-                        </div>
-                        <svg class="icon text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm font-medium text-gray-500">#3</span>
-                                <span class="font-medium text-gray-900">Customer Interview Techniques</span>
-                            </div>
-                            <div class="flex items-center space-x-4 mt-1 text-sm text-gray-600">
-                                <span>1,650 views</span>
-                                <span>Score: 1,280</span>
-                            </div>
-                        </div>
-                        <svg class="icon text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Trending Content -->
-            <div class="content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Trending Content (Week over Week)</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex-1">
-                            <span class="font-medium text-gray-900">Data Visualization Best Practices</span>
-                            <div class="text-sm text-gray-600 mt-1">Tutorial</div>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <svg class="icon text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                            <span class="text-green-600 font-medium">+145.2%</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex-1">
-                            <span class="font-medium text-gray-900">User Research Methods</span>
-                            <div class="text-sm text-gray-600 mt-1">Workshop</div>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <svg class="icon text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                            <span class="text-green-600 font-medium">+89.3%</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex-1">
-                            <span class="font-medium text-gray-900">Product Roadmap Planning</span>
-                            <div class="text-sm text-gray-600 mt-1">Strategy</div>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <svg class="icon text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                            <span class="text-green-600 font-medium">+67.8%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Interactive Elements Analytics -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Engagement Metrics -->
-            <div class="content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Elements</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="text-center p-4 bg-blue-50 rounded-lg">
-                        <svg class="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                        </svg>
-                        <div class="text-2xl font-bold text-blue-900">1,420</div>
-                        <div class="text-sm text-blue-600">Comments & Reactions</div>
-                    </div>
-                    <div class="text-center p-4 bg-green-50 rounded-lg">
-                        <svg class="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <div class="text-2xl font-bold text-green-900">340</div>
-                        <div class="text-sm text-green-600">Survey Responses</div>
-                    </div>
-                    <div class="text-center p-4 bg-purple-50 rounded-lg">
-                        <svg class="w-8 h-8 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        <div class="text-2xl font-bold text-purple-900">180</div>
-                        <div class="text-sm text-purple-600">Poll/Quiz Responses</div>
-                    </div>
-                    <div class="text-center p-4 bg-orange-50 rounded-lg">
-                        <svg class="w-8 h-8 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                        <div class="text-2xl font-bold text-orange-900">8</div>
-                        <div class="text-sm text-orange-600">Reported Content</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Underperforming Content -->
-            <div class="content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Needs Optimization</h3>
-                <div class="space-y-3">
-                    <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div class="font-medium text-gray-900">Legacy System Migration</div>
-                        <div class="flex items-center justify-between mt-2 text-sm">
-                            <span class="text-gray-600">180 views • Score: 45</span>
-                            <span class="text-red-600 bg-red-100 px-2 py-1 rounded text-xs">Low completion rate</span>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div class="font-medium text-gray-900">Technical Documentation Review</div>
-                        <div class="flex items-center justify-between mt-2 text-sm">
-                            <span class="text-gray-600">120 views • Score: 32</span>
-                            <span class="text-red-600 bg-red-100 px-2 py-1 rounded text-xs">High drop-off</span>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <div class="font-medium text-gray-900">Quarterly Business Review</div>
-                        <div class="flex items-center justify-between mt-2 text-sm">
-                            <span class="text-gray-600">95 views • Score: 28</span>
-                            <span class="text-red-600 bg-red-100 px-2 py-1 rounded text-xs">Low engagement</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Weekly Insights Panel -->
-        <div class="content-card">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Performance Summary</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="space-y-3">
-                    <h4 class="font-medium text-gray-900">Key Metric Changes</h4>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• Views increased by 15.2% this week</li>
-                        <li>• Engagement rate improved by 8.7%</li>
-                        <li>• Return viewers up 3.4%</li>
-                    </ul>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-medium text-gray-900">Top Performer</h4>
-                    <p class="text-sm text-gray-600">
-                        "Introduction to Product Strategy" led with 2,340 views and highest engagement score of 1,580 points.
-                    </p>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-medium text-gray-900">Actionable Recommendations</h4>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• Review "Legacy System Migration" for improvements</li>
-                        <li>• Promote trending "Data Visualization" content</li>
-                        <li>• Engage with highly active commenters</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-sm text-gray-600">Export Analytics Data</span>
-                    <div class="flex space-x-2">
-                        <button onclick="downloadSurveyData()" class="download-btn text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100">
-                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span>Survey Data</span>
-                        </button>
-                        <button onclick="downloadVideoPerformance()" class="download-btn text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100">
-                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span>Video Performance</span>
-                        </button>
-                        <button onclick="downloadFullReport()" class="download-btn text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100">
-                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span>Full Report</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Initialize charts
-        function initializeCharts() {
-            // Weekly Trend Chart
-            const weeklyCtx = document.getElementById('weeklyTrendChart').getContext('2d');
-            new Chart(weeklyCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [{
-                        label: 'Views',
-                        data: [8500, 9200, 10800, 12340],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.1
-                    }, {
-                        label: 'Engagement',
-                        data: [890, 1120, 1340, 1580],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Audience Segment Chart
-            const audienceCtx = document.getElementById('audienceSegmentChart').getContext('2d');
-            new Chart(audienceCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Highly Engaged', 'Casual Viewers'],
-                    datasets: [{
-                        data: [1240, 7520],
-                        backgroundColor: ['#10b981', '#6b7280'],
-                        hoverBackgroundColor: ['#059669', '#4b5563']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
+    }
 
-        // Menu navigation functionality
-        function switchMenu(menuName) {
-            // For demo purposes, just show an alert
-            if (menuName !== 'analytics') {
-                alert(`Navigating to ${menuName.charAt(0).toUpperCase() + menuName.slice(1)} section`);
-            }
-        }
+    function downloadSurveyData() {
+        const surveyData = [
+            { videoTitle: "Introduction to Product Strategy", question: "How useful was this content?", answer: "Very useful", responseType: "survey", submittedAt: "2024-06-15T10:30:00Z", userSegment: "highly_engaged" },
+            { videoTitle: "Introduction to Product Strategy", question: "Rate your understanding (1-5)", answer: "4", responseType: "poll", submittedAt: "2024-06-15T11:15:00Z", userSegment: "casual_viewer" },
+            { videoTitle: "Advanced Analytics Deep Dive", question: "Which analytics method do you prefer?", answer: "Cohort analysis", responseType: "quiz", submittedAt: "2024-06-16T09:20:00Z", userSegment: "highly_engaged" },
+            { videoTitle: "Customer Interview Techniques", question: "Have you applied these techniques?", answer: "Yes, immediately", responseType: "survey", submittedAt: "2024-06-16T14:45:00Z", userSegment: "highly_engaged" },
+            { videoTitle: "Market Research Fundamentals", question: "What's your biggest research challenge?", answer: "Finding qualified participants", responseType: "survey", submittedAt: "2024-06-17T08:10:00Z", userSegment: "casual_viewer" }
+        ];
+        
+        const headers = ['videoTitle', 'question', 'answer', 'responseType', 'submittedAt', 'userSegment'];
+        const csvContent = convertToCSV(surveyData, headers);
+        const timestamp = new Date().toISOString().split('T')[0];
+        downloadCSV(csvContent, `survey-poll-responses-${timestamp}.csv`);
+    }
 
-        function toggleAnalytics() {
-            // Analytics is already selected, no action needed
-        }
+    function downloadVideoPerformance() {
+        const videoData = [
+            { title: "Introduction to Product Strategy", views: 2340, engagementScore: 1580, trend: "up" },
+            { title: "Advanced Analytics Deep Dive", views: 1890, engagementScore: 1420, trend: "up" },
+            { title: "Customer Interview Techniques", views: 1650, engagementScore: 1280, trend: "down" },
+            { title: "Market Research Fundamentals", views: 1420, engagementScore: 980, trend: "up" },
+            { title: "Competitive Analysis Workshop", views: 1250, engagementScore: 760, trend: "stable" }
+        ];
+        
+        const headers = ['title', 'views', 'engagementScore', 'trend'];
+        const csvContent = convertToCSV(videoData, headers);
+        const timestamp = new Date().toISOString().split('T')[0];
+        downloadCSV(csvContent, `video-performance-${timestamp}.csv`);
+    }
 
-        function switchAnalyticsTab(tabName) {
-            // Remove active class from all analytics tabs
-            document.querySelectorAll('#analytics-submenu .menu-item').forEach(tab => {
-                tab.classList.remove('tab-active');
-                tab.classList.add('tab-inactive');
-            });
-            
-            // Add active class to clicked tab
-            event.target.classList.remove('tab-inactive');
-            event.target.classList.add('tab-active');
+    function downloadFullReport() {
+        const reportData = [{
+            reportDate: new Date().toISOString().split('T')[0],
+            timeRange: document.getElementById('timeRange').value,
+            totalViews: 12340,
+            uniqueViewers: 8760,
+            accumulatedWatchTime: 45680,
+            avgWatchTime: 5.2,
+            engagementRate: 24.3,
+            completionRate: 68.5,
+            returnViewerRate: 42.1
+        }];
+        
+        const headers = ['reportDate', 'timeRange', 'totalViews', 'uniqueViewers', 'accumulatedWatchTime', 'avgWatchTime', 'engagementRate', 'completionRate', 'returnViewerRate'];
+        const csvContent = convertToCSV(reportData, headers);
+        const timestamp = new Date().toISOString().split('T')[0];
+        downloadCSV(csvContent, `analytics-report-${timestamp}.csv`);
+    }
 
-            // Update the page title
-            const titles = {
-                'summary': 'Analytics - Summary',
-                'viewers': 'Analytics - Viewers',
-                'videos': 'Analytics - Videos',
-                'engagement': 'Analytics - Engagement'
-            };
-            
-            document.querySelector('h1').textContent = titles[tabName];
-
-            // For demo purposes, show different content based on tab
-            if (tabName === 'viewers') {
-                alert('This would show viewer demographics, audience segments, geographic distribution, and viewing patterns');
-            } else if (tabName === 'videos') {
-                alert('This would show video-specific analytics, performance metrics, and content ranking');
-            } else if (tabName === 'engagement') {
-                alert('This would show engagement metrics, comments, reactions, surveys, polls, and interactive elements');
-            }
-        }
-
-        // Tab switching functionality (legacy - keeping for compatibility)
-        function switchTab(tabName) {
-            // This function is no longer used but kept for compatibility
-        }
-
-        // Download functionality
-        function convertToCSV(data, headers) {
-            const csvHeaders = headers.join(',');
-            const csvRows = data.map(row => 
-                headers.map(header => {
-                    const value = row[header];
-                    if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
-                        return `"${value.replace(/"/g, '""')}"`;
-                    }
-                    return value;
-                }).join(',')
-            );
-            return [csvHeaders, ...csvRows].join('\n');
-        }
-
-        function downloadCSV(csvContent, filename) {
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', filename);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }
-        }
-
-        function downloadSurveyData() {
-            const surveyData = [
-                { videoTitle: "Introduction to Product Strategy", question: "How useful was this content?", answer: "Very useful", responseType: "survey", submittedAt: "2024-06-15T10:30:00Z", userSegment: "highly_engaged" },
-                { videoTitle: "Introduction to Product Strategy", question: "Rate your understanding (1-5)", answer: "4", responseType: "poll", submittedAt: "2024-06-15T11:15:00Z", userSegment: "casual_viewer" },
-                { videoTitle: "Advanced Analytics Deep Dive", question: "Which analytics method do you prefer?", answer: "Cohort analysis", responseType: "quiz", submittedAt: "2024-06-16T09:20:00Z", userSegment: "highly_engaged" },
-                { videoTitle: "Customer Interview Techniques", question: "Have you applied these techniques?", answer: "Yes, immediately", responseType: "survey", submittedAt: "2024-06-16T14:45:00Z", userSegment: "highly_engaged" },
-                { videoTitle: "Market Research Fundamentals", question: "What's your biggest research challenge?", answer: "Finding qualified participants", responseType: "survey", submittedAt: "2024-06-17T08:10:00Z", userSegment: "casual_viewer" }
-            ];
-            
-            const headers = ['videoTitle', 'question', 'answer', 'responseType', 'submittedAt', 'userSegment'];
-            const csvContent = convertToCSV(surveyData, headers);
-            const timestamp = new Date().toISOString().split('T')[0];
-            downloadCSV(csvContent, `survey-poll-responses-${timestamp}.csv`);
-        }
-
-        function downloadVideoPerformance() {
-            const videoData = [
-                { title: "Introduction to Product Strategy", views: 2340, engagementScore: 1580, trend: "up" },
-                { title: "Advanced Analytics Deep Dive", views: 1890, engagementScore: 1420, trend: "up" },
-                { title: "Customer Interview Techniques", views: 1650, engagementScore: 1280, trend: "down" },
-                { title: "Market Research Fundamentals", views: 1420, engagementScore: 980, trend: "up" },
-                { title: "Competitive Analysis Workshop", views: 1250, engagementScore: 760, trend: "stable" }
-            ];
-            
-            const headers = ['title', 'views', 'engagementScore', 'trend'];
-            const csvContent = convertToCSV(videoData, headers);
-            const timestamp = new Date().toISOString().split('T')[0];
-            downloadCSV(csvContent, `video-performance-${timestamp}.csv`);
-        }
-
-        function downloadFullReport() {
-            const reportData = [{
-                reportDate: new Date().toISOString().split('T')[0],
-                timeRange: document.getElementById('timeRange').value,
-                totalViews: 12340,
-                uniqueViewers: 8760,
-                accumulatedWatchTime: 45680,
-                avgWatchTime: 5.2,
-                engagementRate: 24.3,
-                completionRate: 68.5,
-                returnViewerRate: 42.1
-            }];
-            
-            const headers = ['reportDate', 'timeRange', 'totalViews', 'uniqueViewers', 'accumulatedWatchTime', 'avgWatchTime', 'engagementRate', 'completionRate', 'returnViewerRate'];
-            const csvContent = convertToCSV(reportData, headers);
-            const timestamp = new Date().toISOString().split('T')[0];
-            downloadCSV(csvContent, `analytics-report-${timestamp}.csv`);
-        }
-
-        // Initialize when page loads
-window.addEventListener('load', function () {
-    initializeCharts();
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    initializeCharts();
-});
-    </script>
-</body>
-</html>
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCharts();
+    });
+</script>
