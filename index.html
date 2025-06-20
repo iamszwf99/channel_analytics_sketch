@@ -594,7 +594,7 @@
     <script>
         // Initialize charts
         function initializeCharts() {
-            // Weekly Trend Chart
+            // Weekly Trend Chart with New Viewers metric
             const weeklyCtx = document.getElementById('weeklyTrendChart').getContext('2d');
             new Chart(weeklyCtx, {
                 type: 'line',
@@ -605,21 +605,76 @@
                         data: [8500, 9200, 10800, 12340],
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.1
+                        tension: 0.1,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'New Viewers',
+                        data: [5200, 5680, 6340, 7120],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.1,
+                        yAxisID: 'y'
                     }, {
                         label: 'Engagement',
                         data: [890, 1120, 1340, 1580],
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.1
+                        tension: 0.1,
+                        yAxisID: 'y1'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time Period'
+                            }
+                        },
                         y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Views / New Viewers'
+                            },
                             beginAtZero: true
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Engagements'
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    if (context.dataset.label === 'New Viewers') {
+                                        const newViewers = context.parsed.y;
+                                        const totalViews = context.chart.data.datasets[0].data[context.dataIndex];
+                                        const percentage = ((newViewers / totalViews) * 100).toFixed(1);
+                                        return `${percentage}% of total views`;
+                                    }
+                                    return '';
+                                }
+                            }
                         }
                     }
                 }
@@ -742,13 +797,13 @@
         }
 
         // Initialize when page loads
-window.addEventListener('load', function () {
-    initializeCharts();
-});
+        window.addEventListener('load', function () {
+            initializeCharts();
+        });
 
-document.addEventListener('DOMContentLoaded', function () {
-    initializeCharts();
-});
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeCharts();
+        });
     </script>
 </body>
 </html>
