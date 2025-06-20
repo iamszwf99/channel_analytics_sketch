@@ -294,36 +294,18 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="kpi-card">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Engagement Rate</span>
+                    <span class="text-sm font-medium text-gray-600">New Unique Viewers</span>
                     <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                     </svg>
                 </div>
                 <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">24.3%</span>
+                    <span class="text-2xl font-bold text-gray-900">2,580</span>
                     <span class="text-sm flex items-center trend-up">
                         <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                         </svg>
-                        8.7%
-                    </span>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">Completion Rate</span>
-                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-4a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="flex items-end space-x-2">
-                    <span class="text-2xl font-bold text-gray-900">68.5%</span>
-                    <span class="text-sm flex items-center trend-up">
-                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        5.2%
+                        22.4%
                     </span>
                 </div>
             </div>
@@ -342,6 +324,24 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                         </svg>
                         3.4%
+                    </span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-600">Engagement Rate</span>
+                    <svg class="icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <div class="flex items-end space-x-2">
+                    <span class="text-2xl font-bold text-gray-900">24.3%</span>
+                    <span class="text-sm flex items-center trend-up">
+                        <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        8.7%
                     </span>
                 </div>
             </div>
@@ -786,11 +786,11 @@
                 accumulatedWatchTime: 45680,
                 avgWatchTime: 5.2,
                 engagementRate: 24.3,
-                completionRate: 68.5,
+                newUniqueViewers: 2580,
                 returnViewerRate: 42.1
             }];
             
-            const headers = ['reportDate', 'timeRange', 'totalViews', 'uniqueViewers', 'accumulatedWatchTime', 'avgWatchTime', 'engagementRate', 'completionRate', 'returnViewerRate'];
+            const headers = ['reportDate', 'timeRange', 'totalViews', 'uniqueViewers', 'accumulatedWatchTime', 'avgWatchTime', 'engagementRate', 'newUniqueViewers', 'returnViewerRate'];
             const csvContent = convertToCSV(reportData, headers);
             const timestamp = new Date().toISOString().split('T')[0];
             downloadCSV(csvContent, `analytics-report-${timestamp}.csv`);
