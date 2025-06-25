@@ -688,6 +688,131 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Additional Engagement Data -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Most Downloaded Resource -->
+                <div class="content-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Most Downloaded Resource</h3>
+                        <button onclick="downloadResourceReport()" class="download-btn text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download Full Report
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Product_Strategy_Framework_Template.pdf</h4>
+                                        <p class="text-sm text-gray-600">Associated with: "Introduction to Product Strategy" video</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-2xl font-bold text-emerald-600">486</div>
+                                    <div class="text-sm text-gray-600">downloads</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between text-sm">
+                                <span class="text-gray-600">File size: 2.3 MB</span>
+                                <span class="text-gray-600">Last downloaded: 2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <h5 class="font-medium text-gray-900">Other Popular Resources:</h5>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div class="flex justify-between">
+                                    <span>Analytics_Dashboard_Guide.pdf</span>
+                                    <span class="font-medium">234 downloads</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Customer_Interview_Checklist.docx</span>
+                                    <span class="font-medium">187 downloads</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Market_Research_Template.xlsx</span>
+                                    <span class="font-medium">156 downloads</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Most Recent Questions -->
+                <div class="content-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Most Recent Questions</h3>
+                        <button onclick="downloadQAReport()" class="download-btn text-pink-600 hover:text-pink-700 bg-pink-50 hover:bg-pink-100">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download Full Q&A Report
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-pink-50 border border-pink-200 rounded-lg">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span class="font-semibold text-gray-900">Latest Question</span>
+                                        <span class="status-badge" style="background-color: #fee2e2; color: #991b1b;">Unanswered</span>
+                                    </div>
+                                    <p class="text-gray-900 font-medium mb-2">"How do you prioritize features when you have limited development resources?"</p>
+                                    <div class="text-sm text-gray-600 space-y-1">
+                                        <p><strong>Video:</strong> "Introduction to Product Strategy"</p>
+                                        <p><strong>Asked by:</strong> user_7234</p>
+                                        <p><strong>Time:</strong> Jun 24, 2025 3:42 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h5 class="font-medium text-gray-900">Recent Q&A Activity:</h5>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div>
+                                        <span class="font-medium">What metrics should I track for user engagement?</span>
+                                        <div class="text-gray-600">Video: Advanced Analytics Deep Dive</div>
+                                    </div>
+                                    <div class="text-right text-gray-600">
+                                        <div>user_5891</div>
+                                        <div class="status-badge" style="background-color: #d1fae5; color: #065f46;">Answered</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div>
+                                        <span class="font-medium">Can you share examples of successful product roadmaps?</span>
+                                        <div class="text-gray-600">Video: Product Roadmap Planning</div>
+                                    </div>
+                                    <div class="text-right text-gray-600">
+                                        <div>user_3456</div>
+                                        <div class="status-badge" style="background-color: #fef3c7; color: #92400e;">Pending</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div>
+                                        <span class="font-medium">How often should customer interviews be conducted?</span>
+                                        <div class="text-gray-600">Video: Customer Interview Techniques</div>
+                                    </div>
+                                    <div class="text-right text-gray-600">
+                                        <div>user_8912</div>
+                                        <div class="status-badge" style="background-color: #d1fae5; color: #065f46;">Answered</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
