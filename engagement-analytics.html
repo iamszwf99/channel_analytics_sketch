@@ -612,83 +612,6 @@
                 </div>
             </div>
 
-            <!-- Recent Responses Table -->
-            <div class="content-card">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Responses</h3>
-                <div class="overflow-x-auto">
-                    <table class="response-table">
-                        <thead>
-                            <tr>
-                                <th>Date/Time</th>
-                                <th>User</th>
-                                <th>Type</th>
-                                <th>Content</th>
-                                <th>Response</th>
-                                <th>Score/Rating</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Jun 24, 2025 2:15 PM</td>
-                                <td>user_8420</td>
-                                <td><span class="status-badge status-active" style="background-color: #dbeafe; color: #1e40af;">Survey</span></td>
-                                <td>Content Feedback Survey</td>
-                                <td>Very useful content</td>
-                                <td>5/5</td>
-                                <td>
-                                    <button onclick="downloadUserResponse('resp_001')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Jun 24, 2025 1:42 PM</td>
-                                <td>user_7893</td>
-                                <td><span class="status-badge status-active" style="background-color: #d1fae5; color: #065f46;">Poll</span></td>
-                                <td>Preferred Learning Format</td>
-                                <td>Interactive workshops</td>
-                                <td>-</td>
-                                <td>
-                                    <button onclick="downloadUserResponse('resp_002')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Jun 24, 2025 12:28 PM</td>
-                                <td>user_5647</td>
-                                <td><span class="status-badge status-active" style="background-color: #fef3c7; color: #92400e;">Quiz</span></td>
-                                <td>Product Strategy Knowledge</td>
-                                <td>Multiple choice answers</td>
-                                <td>85%</td>
-                                <td>
-                                    <button onclick="downloadUserResponse('resp_003')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Jun 24, 2025 11:15 AM</td>
-                                <td>user_3291</td>
-                                <td><span class="status-badge status-active" style="background-color: #d1fae5; color: #065f46;">Poll</span></td>
-                                <td>Content Difficulty Rating</td>
-                                <td>Just Right</td>
-                                <td>-</td>
-                                <td>
-                                    <button onclick="downloadUserResponse('resp_004')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Jun 24, 2025 10:03 AM</td>
-                                <td>user_9876</td>
-                                <td><span class="status-badge status-active" style="background-color: #fef3c7; color: #92400e;">Quiz</span></td>
-                                <td>Analytics Terminology</td>
-                                <td>Multiple choice answers</td>
-                                <td>92%</td>
-                                <td>
-                                    <button onclick="downloadUserResponse('resp_005')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
             <!-- Additional Engagement Data -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Most Downloaded Resource -->
@@ -980,6 +903,36 @@
             const headers = Object.keys(userData[0]);
             const csvContent = convertToCSV(userData, headers);
             downloadCSV(csvContent, `user-response-${responseId}.csv`);
+        }
+
+        function downloadResourceReport() {
+            const resourceData = [
+                { fileName: "Product_Strategy_Framework_Template.pdf", videoTitle: "Introduction to Product Strategy", fileSize: "2.3 MB", totalDownloads: 486, userId: "user_8420", userName: "Sarah Johnson", email: "sarah.j@company.com", downloadTimestamp: "2025-06-24T14:15:00Z", userSegment: "highly_engaged" },
+                { fileName: "Product_Strategy_Framework_Template.pdf", videoTitle: "Introduction to Product Strategy", fileSize: "2.3 MB", totalDownloads: 486, userId: "user_7893", userName: "Mike Chen", email: "mike.c@company.com", downloadTimestamp: "2025-06-24T13:42:00Z", userSegment: "casual_viewer" },
+                { fileName: "Analytics_Dashboard_Guide.pdf", videoTitle: "Advanced Analytics Deep Dive", fileSize: "1.8 MB", totalDownloads: 234, userId: "user_5647", userName: "Emily Rodriguez", email: "emily.r@company.com", downloadTimestamp: "2025-06-24T12:28:00Z", userSegment: "highly_engaged" },
+                { fileName: "Customer_Interview_Checklist.docx", videoTitle: "Customer Interview Techniques", fileSize: "0.8 MB", totalDownloads: 187, userId: "user_3291", userName: "David Smith", email: "david.s@company.com", downloadTimestamp: "2025-06-24T11:15:00Z", userSegment: "casual_viewer" },
+                { fileName: "Market_Research_Template.xlsx", videoTitle: "Market Research Fundamentals", fileSize: "1.2 MB", totalDownloads: 156, userId: "user_9876", userName: "Alex Johnson", email: "alex.j@company.com", downloadTimestamp: "2025-06-24T10:03:00Z", userSegment: "highly_engaged" }
+            ];
+            
+            const headers = ['fileName', 'videoTitle', 'fileSize', 'totalDownloads', 'userId', 'userName', 'email', 'downloadTimestamp', 'userSegment'];
+            const csvContent = convertToCSV(resourceData, headers);
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csvContent, `resource-downloads-full-report-${timestamp}.csv`);
+        }
+
+        function downloadQAReport() {
+            const qaData = [
+                { questionId: "qa_001", videoTitle: "Introduction to Product Strategy", question: "How do you prioritize features when you have limited development resources?", userId: "user_7234", userName: "Lisa Wang", email: "lisa.w@company.com", questionTimestamp: "2025-06-24T15:42:00Z", status: "unanswered", answer: null, answerTimestamp: null, answeredBy: null },
+                { questionId: "qa_002", videoTitle: "Advanced Analytics Deep Dive", question: "What metrics should I track for user engagement?", userId: "user_5891", userName: "Tom Martinez", email: "tom.m@company.com", questionTimestamp: "2025-06-24T14:20:00Z", status: "answered", answer: "Key metrics include time on page, bounce rate, conversion rate, and user retention. Focus on metrics that align with your business objectives.", answerTimestamp: "2025-06-24T15:10:00Z", answeredBy: "instructor_001" },
+                { questionId: "qa_003", videoTitle: "Product Roadmap Planning", question: "Can you share examples of successful product roadmaps?", userId: "user_3456", userName: "Jennifer Lee", email: "jennifer.l@company.com", questionTimestamp: "2025-06-24T13:55:00Z", status: "pending", answer: null, answerTimestamp: null, answeredBy: null },
+                { questionId: "qa_004", videoTitle: "Customer Interview Techniques", question: "How often should customer interviews be conducted?", userId: "user_8912", userName: "Robert Kim", email: "robert.k@company.com", questionTimestamp: "2025-06-24T12:30:00Z", status: "answered", answer: "Ideally, conduct customer interviews continuously throughout the product development cycle. For ongoing products, quarterly interviews help maintain customer insight.", answerTimestamp: "2025-06-24T13:15:00Z", answeredBy: "instructor_002" },
+                { questionId: "qa_005", videoTitle: "Market Research Fundamentals", question: "What's the difference between primary and secondary research?", userId: "user_6543", userName: "Maria Garcia", email: "maria.g@company.com", questionTimestamp: "2025-06-24T11:45:00Z", status: "answered", answer: "Primary research involves collecting original data directly from sources (surveys, interviews). Secondary research uses existing data from reports, studies, and publications.", answerTimestamp: "2025-06-24T12:20:00Z", answeredBy: "instructor_001" }
+            ];
+            
+            const headers = ['questionId', 'videoTitle', 'question', 'userId', 'userName', 'email', 'questionTimestamp', 'status', 'answer', 'answerTimestamp', 'answeredBy'];
+            const csvContent = convertToCSV(qaData, headers);
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csvContent, `qa-full-report-${timestamp}.csv`);
         }
 
         // Initialize when page loads
