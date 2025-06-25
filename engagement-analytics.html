@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video CMS Analytics - Engagement</title>
+    <title>Video CMS Engagement Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .trend-stable { color: #f59e0b; }
+        .kpi-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .content-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
         .sidebar {
             width: 240px;
             background: white;
@@ -56,170 +75,79 @@
             padding: 0.5rem 1.5rem;
             font-size: 0.8rem;
         }
-        .component-card {
-            background: white;
+        .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
             border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-        .component-header {
-            background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1.5rem;
-        }
-        .component-content {
-            padding: 1.5rem;
-        }
-        .question-item {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-        }
-        .question-text {
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-        .correct-answer {
-            color: #059669;
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-        .response-count {
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-        .cta-button {
-            background-color: #3b82f6;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
             font-size: 0.875rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
-        .cta-button:hover {
-            background-color: #2563eb;
-        }
-        .accuracy-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        .accuracy-item {
-            text-align: center;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            border: 1px solid #e5e7eb;
-        }
-        .accuracy-high {
-            background-color: #dcfce7;
-            border-color: #bbf7d0;
-        }
-        .accuracy-medium {
-            background-color: #fef3c7;
-            border-color: #fde68a;
-        }
-        .accuracy-low {
-            background-color: #fee2e2;
-            border-color: #fecaca;
-        }
-        .accuracy-percentage {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-        .accuracy-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            font-weight: 500;
+        .download-btn:hover {
+            transform: translateY(-1px);
         }
         .icon {
             width: 1rem;
             height: 1rem;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
+        .chart-container {
+            position: relative;
+            height: 300px;
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
         }
-        .modal-content {
-            background-color: white;
-            margin: 2% auto;
-            padding: 0;
-            border-radius: 0.5rem;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
+        .pie-chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
         }
-        .modal-header {
-            background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1.5rem;
+        .engagement-item {
             display: flex;
-            justify-content: space-between;
+            justify-content: between;
             align-items: center;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
         }
-        .modal-body {
-            padding: 1.5rem;
+        .engagement-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .close {
-            color: #9ca3af;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: #374151;
-        }
+        .engagement-type-survey { border-left: 4px solid #3b82f6; }
+        .engagement-type-poll { border-left: 4px solid #10b981; }
+        .engagement-type-quiz { border-left: 4px solid #f59e0b; }
         .response-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+        }
+        .response-table th,
+        .response-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
         }
         .response-table th {
             background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0.75rem;
-            text-align: left;
             font-weight: 500;
-            font-size: 0.875rem;
             color: #374151;
-        }
-        .response-table td {
-            border-bottom: 1px solid #f3f4f6;
-            padding: 0.75rem;
-            font-size: 0.875rem;
-            color: #111827;
         }
         .response-table tbody tr:hover {
             background-color: #f9fafb;
         }
-        .tab-active {
-            background-color: #dbeafe;
-            color: #1d4ed8;
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
             font-weight: 500;
         }
-        .tab-inactive {
-            color: #6b7280;
-        }
+        .status-active { background-color: #d1fae5; color: #065f46; }
+        .status-draft { background-color: #fef3c7; color: #92400e; }
+        .status-closed { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -284,10 +212,10 @@
 
             <!-- Analytics Submenu -->
             <div id="analytics-submenu" class="submenu">
-                <button class="menu-item tab-inactive" onclick="switchAnalyticsTab('summary')">Summary</button>
-                <button class="menu-item tab-inactive" onclick="switchAnalyticsTab('viewers')">Viewers</button>
-                <button class="menu-item tab-inactive" onclick="switchAnalyticsTab('videos')">Videos</button>
-                <button class="menu-item tab-active" onclick="switchAnalyticsTab('engagement')">Engagement</button>
+                <a href="summary.html" class="menu-item tab-inactive">Summary</a>
+                <a href="viewers-analytics.html" class="menu-item tab-inactive">Viewers</a>
+                <a href="videos-analytics.html" class="menu-item tab-inactive">Videos</a>
+                <a href="engagement-analytics.html" class="menu-item tab-active">Engagement</a>
             </div>
 
             <!-- Integrations -->
@@ -302,366 +230,493 @@
 
     <!-- Main Content -->
     <div class="main-content p-6">
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-7xl mx-auto">
             <!-- Header -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Analytics - Engagement</h1>
-                <p class="text-gray-600">Interactive elements performance and user engagement metrics</p>
-            </div>
-
-            <!-- Survey Component -->
-            <div class="component-card">
-                <div class="component-header">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                            </svg>
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-900">Product Strategy Feedback Survey</h2>
-                                <p class="text-sm text-gray-600 mt-1">134 responses</p>
-                            </div>
-                        </div>
-                        <button onclick="openSurveyDetails()" class="cta-button">
-                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            View Details
-                        </button>
-                    </div>
-                </div>
-                <div class="component-content">
-                    <div class="question-item">
-                        <div class="question-text">1. How useful was this content for your work?</div>
-                        <div class="response-count">134 responses</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">2. What specific aspects helped you most?</div>
-                        <div class="response-count">128 responses</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">3. How likely are you to recommend this to a colleague?</div>
-                        <div class="response-count">134 responses</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">4. What additional topics would you like to see covered?</div>
-                        <div class="response-count">89 responses</div>
-                    </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Analytics - Engagement</h1>
+                <div class="flex items-center space-x-4">
+                    <select id="timeRange" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                        <option value="90d">Last 90 days</option>
+                    </select>
+                    <select id="engagementType" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">All Types</option>
+                        <option value="survey">Surveys Only</option>
+                        <option value="poll">Polls Only</option>
+                        <option value="quiz">Quizzes Only</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Poll Component -->
-            <div class="component-card">
-                <div class="component-header">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <!-- Engagement Overview KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Total Surveys</span>
+                        <svg class="icon text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">3</span>
+                        <span class="text-sm flex items-center trend-up">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                             </svg>
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-900">Analytics Tools Preference Poll</h2>
-                                <p class="text-sm text-gray-600 mt-1">89 responses</p>
-                            </div>
-                        </div>
-                        <button onclick="openPollDetails()" class="cta-button">
-                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            View Details
-                        </button>
+                            +1 this week
+                        </span>
                     </div>
                 </div>
-                <div class="component-content">
-                    <div class="question-item">
-                        <div class="question-text">1. Which analytics tool do you prefer for data visualization?</div>
-                        <div class="response-count">89 responses</div>
+
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Total Polls</span>
+                        <svg class="icon text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
                     </div>
-                    <div class="question-item">
-                        <div class="question-text">2. How often do you create dashboards?</div>
-                        <div class="response-count">85 responses</div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">8</span>
+                        <span class="text-sm flex items-center trend-up">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            +3 this week
+                        </span>
                     </div>
-                    <div class="question-item">
-                        <div class="question-text">3. What's your primary use case for analytics?</div>
-                        <div class="response-count">89 responses</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Total Quizzes</span>
+                        <svg class="icon text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">5</span>
+                        <span class="text-sm flex items-center trend-stable">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                            </svg>
+                            No change
+                        </span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Total Responses</span>
+                        <svg class="icon text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">1,847</span>
+                        <span class="text-sm flex items-center trend-up">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            18.5%
+                        </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Quiz Component -->
-            <div class="component-card">
-                <div class="component-header">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            <!-- Response Rate KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Survey Response Rate</span>
+                        <svg class="icon text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">28.4%</span>
+                        <span class="text-sm flex items-center trend-up">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                             </svg>
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-900">Market Research Knowledge Quiz</h2>
-                                <p class="text-sm text-gray-600 mt-1">67 responses</p>
-                            </div>
-                        </div>
-                        <button onclick="openQuizDetails()" class="cta-button">
-                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            View Details
-                        </button>
+                            5.2%
+                        </span>
                     </div>
                 </div>
-                <div class="component-content">
-                    <div class="question-item">
-                        <div class="question-text">1. What is the primary goal of market segmentation?</div>
-                        <div class="correct-answer">Correct Answer: To identify distinct groups of customers with similar needs</div>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="response-count">67 responses</div>
-                            <div class="text-sm">
-                                <span class="text-green-600 font-semibold">78% correct</span>
-                                <span class="text-gray-400 mx-2">•</span>
-                                <span class="text-red-600">22% incorrect</span>
-                            </div>
-                        </div>
+
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Poll Response Rate</span>
+                        <svg class="icon text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
                     </div>
-                    <div class="question-item">
-                        <div class="question-text">2. Which method is best for gathering qualitative data?</div>
-                        <div class="correct-answer">Correct Answer: In-depth interviews</div>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="response-count">65 responses</div>
-                            <div class="text-sm">
-                                <span class="text-green-600 font-semibold">82% correct</span>
-                                <span class="text-gray-400 mx-2">•</span>
-                                <span class="text-red-600">18% incorrect</span>
-                            </div>
-                        </div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">45.7%</span>
+                        <span class="text-sm flex items-center trend-up">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            12.3%
+                        </span>
                     </div>
-                    <div class="question-item">
-                        <div class="question-text">3. What does a confidence interval represent?</div>
-                        <div class="correct-answer">Correct Answer: The range within which the true value likely falls</div>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="response-count">67 responses</div>
-                            <div class="text-sm">
-                                <span class="text-green-600 font-semibold">64% correct</span>
-                                <span class="text-gray-400 mx-2">•</span>
-                                <span class="text-red-600">36% incorrect</span>
-                            </div>
-                        </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Quiz Response Rate</span>
+                        <svg class="icon text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
                     </div>
-                    <div class="question-item">
-                        <div class="question-text">4. Which sampling method ensures every member has an equal chance?</div>
-                        <div class="correct-answer">Correct Answer: Random sampling</div>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="response-count">64 responses</div>
-                            <div class="text-sm">
-                                <span class="text-green-600 font-semibold">89% correct</span>
-                                <span class="text-gray-400 mx-2">•</span>
-                                <span class="text-red-600">11% incorrect</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="accuracy-stats">
-                        <div class="accuracy-item accuracy-high">
-                            <div class="accuracy-percentage text-green-700">28%</div>
-                            <div class="accuracy-label">90+% Accuracy</div>
-                        </div>
-                        <div class="accuracy-item accuracy-medium">
-                            <div class="accuracy-percentage text-yellow-700">45%</div>
-                            <div class="accuracy-label">80% Accuracy</div>
-                        </div>
-                        <div class="accuracy-item accuracy-low">
-                            <div class="accuracy-percentage text-red-700">27%</div>
-                            <div class="accuracy-label">Below 80%</div>
-                        </div>
+                    <div class="flex items-end space-x-2">
+                        <span class="text-2xl font-bold text-gray-900">37.9%</span>
+                        <span class="text-sm flex items-center trend-down">
+                            <svg class="icon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                            </svg>
+                            2.1%
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Survey Details Modal -->
-    <div id="surveyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text-lg font-semibold text-gray-900">Product Strategy Feedback Survey - Detailed Responses</h3>
-                <span class="close" onclick="closeModal('surveyModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <table class="response-table">
-                    <thead>
-                        <tr>
-                            <th>Viewer Name</th>
-                            <th>Q1: Usefulness</th>
-                            <th>Q2: Helpful Aspects</th>
-                            <th>Q3: Recommendation</th>
-                            <th>Q4: Additional Topics</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sarah Johnson</td>
-                            <td>Very useful</td>
-                            <td>Framework methodology</td>
-                            <td>9/10</td>
-                            <td>Competitive analysis</td>
-                        </tr>
-                        <tr>
-                            <td>Michael Chen</td>
-                            <td>Extremely useful</td>
-                            <td>Real-world examples</td>
-                            <td>10/10</td>
-                            <td>Implementation strategies</td>
-                        </tr>
-                        <tr>
-                            <td>Emily Rodriguez</td>
-                            <td>Somewhat useful</td>
-                            <td>Step-by-step process</td>
-                            <td>7/10</td>
-                            <td>Team alignment</td>
-                        </tr>
-                        <tr>
-                            <td>David Wilson</td>
-                            <td>Very useful</td>
-                            <td>Templates provided</td>
-                            <td>8/10</td>
-                            <td>Stakeholder management</td>
-                        </tr>
-                        <tr>
-                            <td>Lisa Thompson</td>
-                            <td>Extremely useful</td>
-                            <td>Practical tips</td>
-                            <td>9/10</td>
-                            <td>-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Response Distribution Chart -->
+                <div class="content-card">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Response Distribution by Type</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="responseDistributionChart"></canvas>
+                    </div>
+                </div>
 
-    <!-- Poll Details Modal -->
-    <div id="pollModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text-lg font-semibold text-gray-900">Analytics Tools Preference Poll - Detailed Responses</h3>
-                <span class="close" onclick="closeModal('pollModal')">&times;</span>
+                <!-- Engagement Trend Chart -->
+                <div class="content-card">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Engagement Trend Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="engagementTrendChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <table class="response-table">
-                    <thead>
-                        <tr>
-                            <th>Viewer Name</th>
-                            <th>Q1: Preferred Tool</th>
-                            <th>Q2: Dashboard Frequency</th>
-                            <th>Q3: Primary Use Case</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sarah Johnson</td>
-                            <td>Tableau</td>
-                            <td>Weekly</td>
-                            <td>Performance tracking</td>
-                        </tr>
-                        <tr>
-                            <td>Michael Chen</td>
-                            <td>Power BI</td>
-                            <td>Daily</td>
-                            <td>Business intelligence</td>
-                        </tr>
-                        <tr>
-                            <td>Emily Rodriguez</td>
-                            <td>Google Analytics</td>
-                            <td>Monthly</td>
-                            <td>Website analysis</td>
-                        </tr>
-                        <tr>
-                            <td>David Wilson</td>
-                            <td>Looker</td>
-                            <td>Weekly</td>
-                            <td>Customer insights</td>
-                        </tr>
-                        <tr>
-                            <td>Lisa Thompson</td>
-                            <td>Excel</td>
-                            <td>As needed</td>
-                            <td>Basic reporting</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
-    <!-- Quiz Details Modal -->
-    <div id="quizModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text-lg font-semibold text-gray-900">Market Research Knowledge Quiz - Detailed Responses</h3>
-                <span class="close" onclick="closeModal('quizModal')">&times;</span>
+            <!-- Individual Engagement Breakdown -->
+            <div class="content-card mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Individual Survey/Poll/Quiz Breakdown</h3>
+                    <button onclick="downloadDetailedResponses()" class="download-btn text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Download All Detailed Responses
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Survey Items -->
+                    <div class="engagement-item engagement-type-survey">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-900">Content Feedback Survey</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-badge status-active">Active</span>
+                                    <button onclick="downloadIndividualResponses('survey-1')" class="download-btn text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 text-xs px-2 py-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Associated with: "Introduction to Product Strategy" video</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="text-gray-600">Responses: <strong>340</strong></span>
+                                    <span class="text-gray-600">Response Rate: <strong>28.9%</strong></span>
+                                    <span class="text-gray-600">Avg. Rating: <strong>4.2/5</strong></span>
+                                </div>
+                                <button onclick="toggleDetails('survey-1')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Poll Items -->
+                    <div class="engagement-item engagement-type-poll">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-900">Preferred Learning Format Poll</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-badge status-active">Active</span>
+                                    <button onclick="downloadIndividualResponses('poll-1')" class="download-btn text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 text-xs px-2 py-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Associated with: "Advanced Analytics Deep Dive" video</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="text-gray-600">Responses: <strong>567</strong></span>
+                                    <span class="text-gray-600">Response Rate: <strong>47.2%</strong></span>
+                                    <span class="text-gray-600">Top Choice: <strong>Interactive workshops</strong></span>
+                                </div>
+                                <button onclick="toggleDetails('poll-1')" class="text-green-600 hover:text-green-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="engagement-item engagement-type-poll">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-900">Content Difficulty Rating</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-badge status-active">Active</span>
+                                    <button onclick="downloadIndividualResponses('poll-2')" class="download-btn text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 text-xs px-2 py-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Associated with: "Customer Interview Techniques" video</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="text-gray-600">Responses: <strong>423</strong></span>
+                                    <span class="text-gray-600">Response Rate: <strong>42.8%</strong></span>
+                                    <span class="text-gray-600">Most Common: <strong>Just Right</strong></span>
+                                </div>
+                                <button onclick="toggleDetails('poll-2')" class="text-green-600 hover:text-green-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Items -->
+                    <div class="engagement-item engagement-type-quiz">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-900">Product Strategy Knowledge Check</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-badge status-active">Active</span>
+                                    <button onclick="downloadIndividualResponses('quiz-1')" class="download-btn text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 text-xs px-2 py-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Associated with: "Introduction to Product Strategy" video</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="text-gray-600">Responses: <strong>289</strong></span>
+                                    <span class="text-gray-600">Response Rate: <strong>39.2%</strong></span>
+                                    <span class="text-gray-600">Avg. Score: <strong>78%</strong></span>
+                                </div>
+                                <button onclick="toggleDetails('quiz-1')" class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="engagement-item engagement-type-quiz">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-900">Analytics Terminology Quiz</h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="status-badge status-closed">Closed</span>
+                                    <button onclick="downloadIndividualResponses('quiz-2')" class="download-btn text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 text-xs px-2 py-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Associated with: "Advanced Analytics Deep Dive" video</p>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="text-gray-600">Responses: <strong>228</strong></span>
+                                    <span class="text-gray-600">Response Rate: <strong>35.7%</strong></span>
+                                    <span class="text-gray-600">Avg. Score: <strong>82%</strong></span>
+                                </div>
+                                <button onclick="toggleDetails('quiz-2')" class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <table class="response-table">
-                    <thead>
-                        <tr>
-                            <th>Viewer Name</th>
-                            <th>Q1: Segmentation</th>
-                            <th>Q2: Qualitative Data</th>
-                            <th>Q3: Confidence Interval</th>
-                            <th>Q4: Sampling</th>
-                            <th>Overall Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sarah Johnson</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td class="font-semibold text-green-600">100%</td>
-                        </tr>
-                        <tr>
-                            <td>Michael Chen</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td>❌ Incorrect</td>
-                            <td>✅ Correct</td>
-                            <td class="font-semibold text-yellow-600">75%</td>
-                        </tr>
-                        <tr>
-                            <td>Emily Rodriguez</td>
-                            <td>✅ Correct</td>
-                            <td>❌ Incorrect</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td class="font-semibold text-yellow-600">75%</td>
-                        </tr>
-                        <tr>
-                            <td>David Wilson</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td>❌ Incorrect</td>
-                            <td class="font-semibold text-yellow-600">75%</td>
-                        </tr>
-                        <tr>
-                            <td>Lisa Thompson</td>
-                            <td>❌ Incorrect</td>
-                            <td>❌ Incorrect</td>
-                            <td>✅ Correct</td>
-                            <td>✅ Correct</td>
-                            <td class="font-semibold text-red-600">50%</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Recent Responses Table -->
+            <div class="content-card">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Responses</h3>
+                <div class="overflow-x-auto">
+                    <table class="response-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Content</th>
+                                <th>Response</th>
+                                <th>Score/Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jun 24, 2025 2:15 PM</td>
+                                <td>user_8420</td>
+                                <td><span class="status-badge status-active" style="background-color: #dbeafe; color: #1e40af;">Survey</span></td>
+                                <td>Content Feedback Survey</td>
+                                <td>Very useful content</td>
+                                <td>5/5</td>
+                                <td>
+                                    <button onclick="downloadUserResponse('resp_001')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jun 24, 2025 1:42 PM</td>
+                                <td>user_7893</td>
+                                <td><span class="status-badge status-active" style="background-color: #d1fae5; color: #065f46;">Poll</span></td>
+                                <td>Preferred Learning Format</td>
+                                <td>Interactive workshops</td>
+                                <td>-</td>
+                                <td>
+                                    <button onclick="downloadUserResponse('resp_002')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jun 24, 2025 12:28 PM</td>
+                                <td>user_5647</td>
+                                <td><span class="status-badge status-active" style="background-color: #fef3c7; color: #92400e;">Quiz</span></td>
+                                <td>Product Strategy Knowledge</td>
+                                <td>Multiple choice answers</td>
+                                <td>85%</td>
+                                <td>
+                                    <button onclick="downloadUserResponse('resp_003')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jun 24, 2025 11:15 AM</td>
+                                <td>user_3291</td>
+                                <td><span class="status-badge status-active" style="background-color: #d1fae5; color: #065f46;">Poll</span></td>
+                                <td>Content Difficulty Rating</td>
+                                <td>Just Right</td>
+                                <td>-</td>
+                                <td>
+                                    <button onclick="downloadUserResponse('resp_004')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jun 24, 2025 10:03 AM</td>
+                                <td>user_9876</td>
+                                <td><span class="status-badge status-active" style="background-color: #fef3c7; color: #92400e;">Quiz</span></td>
+                                <td>Analytics Terminology</td>
+                                <td>Multiple choice answers</td>
+                                <td>92%</td>
+                                <td>
+                                    <button onclick="downloadUserResponse('resp_005')" class="text-blue-600 hover:text-blue-700 text-sm">Download</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Navigation functions
+        // Initialize charts
+        function initializeCharts() {
+            // Response Distribution Chart
+            const distributionCtx = document.getElementById('responseDistributionChart').getContext('2d');
+            new Chart(distributionCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Survey Responses', 'Poll Responses', 'Quiz Responses'],
+                    datasets: [{
+                        data: [340, 990, 517],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                        hoverBackgroundColor: ['#2563eb', '#059669', '#d97706']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Engagement Trend Chart
+            const trendCtx = document.getElementById('engagementTrendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Survey Responses',
+                        data: [45, 67, 89, 112],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.1
+                    }, {
+                        label: 'Poll Responses',
+                        data: [120, 145, 189, 235],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.1
+                    }, {
+                        label: 'Quiz Responses',
+                        data: [78, 98, 134, 145],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time Period'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Responses'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Menu navigation functionality
         function switchMenu(menuName) {
             if (menuName !== 'analytics') {
                 alert(`Navigating to ${menuName.charAt(0).toUpperCase() + menuName.slice(1)} section`);
@@ -672,45 +727,112 @@
             // Analytics is already selected, no action needed
         }
 
-        function switchAnalyticsTab(tabName) {
-            if (tabName === 'summary') {
-                // Navigate to summary page
-                window.location.href = 'index.html';
-            } else if (tabName === 'viewers') {
-                // Navigate to viewers page
-                window.location.href = 'viewers-analytics.html';
-            } else if (tabName === 'videos') {
-                // Navigate to videos page
-                window.location.href = 'videos-analytics.html';
-            } else if (tabName === 'engagement') {
-                // Already on engagement page
-                return;
+        function toggleDetails(itemId) {
+            alert(`Showing detailed breakdown for ${itemId}`);
+        }
+
+        // Download functionality
+        function convertToCSV(data, headers) {
+            const csvHeaders = headers.join(',');
+            const csvRows = data.map(row => 
+                headers.map(header => {
+                    const value = row[header];
+                    if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+                        return `"${value.replace(/"/g, '""')}"`;
+                    }
+                    return value;
+                }).join(',')
+            );
+            return [csvHeaders, ...csvRows].join('\n');
+        }
+
+        function downloadCSV(csvContent, filename) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
             }
         }
 
-        // Modal functions
-        function openSurveyDetails() {
-            document.getElementById('surveyModal').style.display = 'block';
+        function downloadDetailedResponses() {
+            const detailedData = [
+                { responseId: "resp_001", userId: "user_8420", userName: "Sarah Johnson", email: "sarah.j@company.com", timestamp: "2025-06-24T14:15:00Z", type: "survey", contentTitle: "Content Feedback Survey", videoTitle: "Introduction to Product Strategy", question: "How useful was this content?", answer: "Very useful content", rating: 5, userSegment: "highly_engaged", watchTime: "12:34", completionRate: "95%" },
+                { responseId: "resp_002", userId: "user_7893", userName: "Mike Chen", email: "mike.c@company.com", timestamp: "2025-06-24T13:42:00Z", type: "poll", contentTitle: "Preferred Learning Format", videoTitle: "Advanced Analytics Deep Dive", question: "What learning format do you prefer?", answer: "Interactive workshops", rating: null, userSegment: "casual_viewer", watchTime: "8:12", completionRate: "67%" },
+                { responseId: "resp_003", userId: "user_5647", userName: "Emily Rodriguez", email: "emily.r@company.com", timestamp: "2025-06-24T12:28:00Z", type: "quiz", contentTitle: "Product Strategy Knowledge Check", videoTitle: "Introduction to Product Strategy", question: "Multiple choice quiz", answer: "Q1: A, Q2: C, Q3: B, Q4: A, Q5: C", rating: 85, userSegment: "highly_engaged", watchTime: "15:23", completionRate: "100%" }
+            ];
+            
+            const headers = ['responseId', 'userId', 'userName', 'email', 'timestamp', 'type', 'contentTitle', 'videoTitle', 'question', 'answer', 'rating', 'userSegment', 'watchTime', 'completionRate'];
+            const csvContent = convertToCSV(detailedData, headers);
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csvContent, `detailed-engagement-responses-${timestamp}.csv`);
         }
 
-        function openPollDetails() {
-            document.getElementById('pollModal').style.display = 'block';
-        }
-
-        function openQuizDetails() {
-            document.getElementById('quizModal').style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
+        function downloadIndividualResponses(itemId) {
+            // Generate sample data based on item type
+            let sampleData = [];
+            
+            if (itemId.includes('survey')) {
+                sampleData = [
+                    { responseId: "resp_s001", userId: "user_8420", userName: "Sarah Johnson", email: "sarah.j@company.com", timestamp: "2025-06-24T14:15:00Z", question: "How useful was this content?", answer: "Very useful, learned a lot about product strategy frameworks", rating: 5 },
+                    { responseId: "resp_s002", userId: "user_3421", userName: "David Smith", email: "david.s@company.com", timestamp: "2025-06-24T11:30:00Z", question: "How useful was this content?", answer: "Somewhat useful, could use more examples", rating: 3 }
+                ];
+            } else if (itemId.includes('poll')) {
+                sampleData = [
+                    { responseId: "resp_p001", userId: "user_7893", userName: "Mike Chen", email: "mike.c@company.com", timestamp: "2025-06-24T13:42:00Z", question: "What learning format do you prefer?", answer: "Interactive workshops" },
+                    { responseId: "resp_p002", userId: "user_5432", userName: "Lisa Wang", email: "lisa.w@company.com", timestamp: "2025-06-24T10:15:00Z", question: "What learning format do you prefer?", answer: "Video tutorials" }
+                ];
+            } else if (itemId.includes('quiz')) {
+                sampleData = [
+                    { responseId: "resp_q001", userId: "user_5647", userName: "Emily Rodriguez", email: "emily.r@company.com", timestamp: "2025-06-24T12:28:00Z", question: "Q1: What is the first step in product strategy?", answer: "A", correct: true, totalScore: 85 },
+                    { responseId: "resp_q002", userId: "user_9876", userName: "Alex Johnson", email: "alex.j@company.com", timestamp: "2025-06-24T10:03:00Z", question: "Q1: What is the first step in product strategy?", answer: "B", correct: false, totalScore: 72 }
+                ];
             }
+            
+            const headers = Object.keys(sampleData[0]);
+            const csvContent = convertToCSV(sampleData, headers);
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csvContent, `${itemId}-responses-${timestamp}.csv`);
         }
+
+        function downloadUserResponse(responseId) {
+            const userData = [{
+                responseId: responseId,
+                userId: "user_8420",
+                userName: "Sarah Johnson", 
+                email: "sarah.j@company.com",
+                timestamp: "2025-06-24T14:15:00Z",
+                type: "survey",
+                contentTitle: "Content Feedback Survey",
+                videoTitle: "Introduction to Product Strategy",
+                question: "How useful was this content?",
+                answer: "Very useful content",
+                rating: 5,
+                userSegment: "highly_engaged",
+                watchTime: "12:34",
+                completionRate: "95%"
+            }];
+            
+            const headers = Object.keys(userData[0]);
+            const csvContent = convertToCSV(userData, headers);
+            downloadCSV(csvContent, `user-response-${responseId}.csv`);
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function () {
+            initializeCharts();
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeCharts();
+        });
     </script>
 </body>
 </html>
